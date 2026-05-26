@@ -1,0 +1,14 @@
+[
+  { "service": "dynamodb", "action": "GetItem", "resourceArn": "arn:aws:dynamodb:us-east-1:123456789012:table/Orders", "timestamp": "2026-05-20T10:00:00Z" },
+  { "service": "dynamodb", "action": "Query", "resourceArn": "arn:aws:dynamodb:us-east-1:123456789012:table/Orders/index/status-index", "timestamp": "2026-05-20T10:00:01Z" },
+  { "service": "dynamodb", "action": "PutItem", "resourceArn": "arn:aws:dynamodb:us-east-1:123456789012:table/AgentMemory", "timestamp": "2026-05-20T10:00:02Z" },
+  { "service": "bedrock", "action": "InvokeModel", "resourceArn": "arn:aws:bedrock:us-east-1:123456789012:foundation-model/anthropic.claude-3-sonnet", "timestamp": "2026-05-20T10:00:03Z" },
+  { "service": "bedrock", "action": "InvokeModel", "resourceArn": "arn:aws:bedrock:us-east-1:123456789012:foundation-model/anthropic.claude-3-sonnet", "timestamp": "2026-05-20T10:01:00Z" },
+  { "service": "bedrock", "action": "InvokeModel", "resourceArn": "arn:aws:bedrock:us-east-1:123456789012:foundation-model/anthropic.claude-3-sonnet", "timestamp": "2026-05-20T10:02:00Z" },
+  { "service": "lambda", "action": "InvokeFunction", "resourceArn": "arn:aws:lambda:us-east-1:123456789012:function:ProcessOrder", "timestamp": "2026-05-20T10:00:04Z" },
+  { "service": "lambda", "action": "InvokeFunction", "resourceArn": "arn:aws:lambda:us-east-1:123456789012:function:SendNotification", "timestamp": "2026-05-20T10:00:05Z" },
+  { "service": "sns", "action": "Publish", "resourceArn": "arn:aws:sns:us-east-1:123456789012:OrderUpdates", "timestamp": "2026-05-20T10:00:06Z" },
+  { "service": "s3", "action": "GetObject", "resourceArn": "arn:aws:s3:::agent-knowledge-base/docs/faq.pdf", "timestamp": "2026-05-20T10:00:07Z" },
+  { "service": "s3", "action": "GetObject", "resourceArn": "arn:aws:s3:::agent-knowledge-base/docs/returns-policy.pdf", "timestamp": "2026-05-20T10:00:08Z" },
+  { "service": "logs", "action": "PutLogEvents", "resourceArn": "arn:aws:logs:us-east-1:123456789012:log-group:/aws/bedrock/agent-logs", "timestamp": "2026-05-20T10:00:09Z" }
+]

@@ -1,0 +1,35 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DynamoDBAccess",
+      "Effect": "Allow",
+      "Action": ["dynamodb:GetItem", "dynamodb:Query", "dynamodb:PutItem", "dynamodb:Scan"],
+      "Resource": ["arn:aws:dynamodb:us-east-1:123456789012:table/*"]
+    },
+    {
+      "Sid": "S3Access",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+      "Resource": ["arn:aws:s3:::agent-knowledge-base/*"]
+    },
+    {
+      "Sid": "LambdaAccess",
+      "Effect": "Allow",
+      "Action": ["lambda:InvokeFunction"],
+      "Resource": ["arn:aws:lambda:us-east-1:123456789012:function:*"]
+    },
+    {
+      "Sid": "SNSAccess",
+      "Effect": "Allow",
+      "Action": ["sns:Publish", "sns:ListTopics", "sns:Subscribe"],
+      "Resource": ["*"]
+    },
+    {
+      "Sid": "LogsAccess",
+      "Effect": "Allow",
+      "Action": ["logs:PutLogEvents", "logs:CreateLogStream"],
+      "Resource": ["*"]
+    }
+  ]
+}

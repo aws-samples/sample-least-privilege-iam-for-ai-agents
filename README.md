@@ -1,93 +1,239 @@
-# AgentGuard
+# Agentic IAM Tool — Self-Updating IAM Policy Generator + Agent Reasoning Tracer
 
+> Solving two critical challenges in Agentic AI on AWS, built to showcase Kiro's full capabilities.
 
+## Overview
 
-## Getting started
+This project tackles two of the hardest problems developers face when deploying AI agents on AWS:
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+| Problem | Solution | Folder |
+|---------|----------|--------|
+| **IAM Scoping** — Agents make non-deterministic API calls, making least-privilege impossible to predict | Observe → Generate → Detect Drift | `problem-1-iam-scoping/` |
+| **Debugging Opacity** — Standard observability tools don't capture agent reasoning quality | Trace → Analyze → Alert | `problem-2-observability/` |
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+Both tools **self-update** by pulling the latest AWS IAM action definitions and trace format parsers, ensuring they stay current as AWS evolves.
 
-## Add your files
+---
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## Architecture
 
 ```
-cd existing_repo
-git remote add origin https://code.aws.dev/personal_projects/alias_t/tarrych/AgentGuard.git
-git branch -M main
-git push -uf origin main
+┌─────────────────────────────────────────────────────────────────────┐
+│                         Agent Runtime                                 │
+│              (Bedrock / LangChain / Custom)                           │
+└────────────┬────────────────────────────────────┬───────────────────┘
+             │                                    │
+             ▼                                    ▼
+┌────────────────────────────┐    ┌────────────────────────────────────┐
+│  Problem 1: IAM Scoping    │    │  Problem 2: Reasoning Tracer       │
+│                            │    │                                    │
+│  CloudTrail → Observe      │    │  Instrument → Collect Traces       │
+│  Analyze → Generate Policy │    │  Analyze → Score Coherence         │
+│  Compare → Detect Drift    │    │  Visualize → Terminal Dashboard    │
+│  Alert → PR-ready output   │    │  Alert → CloudWatch + SNS         │
+└────────────┬───────────────┘    └──────────────┬─────────────────────┘
+             │                                    │
+             └──────────────┬─────────────────────┘
+                            ▼
+              ┌──────────────────────────┐
+              │  Shared: Self-Update     │
+              │  - Pulls botocore data   │
+              │  - Updates action DB     │
+              │  - Adapts to new formats │
+              └──────────────────────────┘
 ```
 
-## Integrate with your tools
+---
 
-* [Set up project integrations](https://code.aws.dev/personal_projects/alias_t/tarrych/AgentGuard/-/settings/integrations)
+## Problem 1: Agentic IAM Policy Generator
 
-## Collaborate with your team
+**The Problem**: When you deploy a Bedrock Agent, what IAM permissions does it actually need? You can't know upfront because agent behavior is non-deterministic.
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+**The Solution**: Observe the agent's actual API calls via CloudTrail, then generate a minimal policy.
 
-## Test and Deploy
+### Commands
 
-Use the built-in continuous integration in GitLab.
+```bash
+# Observe agent behavior (collects CloudTrail events)
+agentic-iam observe --role-arn arn:aws:iam::123456789012:role/MyAgentRole --days 7
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+# Generate least-privilege policy
+agentic-iam generate --role-arn arn:aws:iam::123456789012:role/MyAgentRole --output policy.json
 
-***
+# Detect drift (over/under-permissioned)
+agentic-iam drift --role-arn arn:aws:iam::123456789012:role/MyAgentRole
 
-# Editing this README
+# Self-update action database
+agentic-iam update --source botocore
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+# Full report
+agentic-iam report --role-arn arn:aws:iam::123456789012:role/MyAgentRole
+```
 
-## Suggestions for a good README
+### Key Features
+- ✅ Observes real agent behavior via CloudTrail
+- ✅ Generates minimal IAM policies with resource-level scoping
+- ✅ Detects drift: over-permissioned, under-permissioned, stale
+- ✅ Self-updates IAM action database from botocore
+- ✅ CDK stack for automated observation infrastructure
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+---
 
-## Name
-Choose a self-explaining name for your project.
+## Problem 2: Agent Reasoning Tracer
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+**The Problem**: When an agent gives a wrong answer, CloudWatch tells you latency was 2.3s. But *why* was the answer wrong? Which reasoning step failed?
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+**The Solution**: Trace the full reasoning chain, score coherence, detect loops and hallucinations.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+### Commands
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+```bash
+# View a specific trace
+agent-tracer trace --trace-id abc-123
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+# Analyze recent traces
+agent-tracer analyze --role-arn arn:aws:iam::123456789012:role/MyAgentRole --last 10
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+# Compare two traces (debug non-determinism)
+agent-tracer diff abc-123 def-456
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+# View/configure alert rules
+agent-tracer alert --list
+```
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+### Key Features
+- ✅ Traces LLM calls, tool invocations, and decisions
+- ✅ Scores reasoning coherence (does step N follow step N-1?)
+- ✅ Detects reasoning loops (agent stuck in a cycle)
+- ✅ Detects hallucinations (LLM claims contradict tool output)
+- ✅ Terminal visualization: DAG, waterfall, diff views
+- ✅ Alerting via CloudWatch metrics + SNS notifications
+- ✅ PII redaction on all stored traces
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+---
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+## Self-Update Mechanism
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+Both tools share a self-update module that keeps them current:
+
+```bash
+# Update IAM action database (Problem 1)
+agentic-iam update --source botocore
+
+# Checks freshness automatically before policy generation
+# Warns if action DB is > 7 days old
+# Errors if > 30 days old
+```
+
+**How it works**:
+1. Fetches latest service models from botocore (GitHub)
+2. Diffs against current local action database
+3. Merges new actions, flags deprecated ones
+4. Versions the database with timestamps
+5. Logs all changes for audit
+
+---
+
+## Kiro Features Demonstrated
+
+| Feature | Problem 1 | Problem 2 |
+|---------|-----------|-----------|
+| **Specs** | Requirements + Design docs | Requirements + Design docs |
+| **Steering** | IAM best practices, security rules | Privacy rules, analysis heuristics |
+| **Hooks (on-save)** | Validate generated policy JSON | PII leak detection in source |
+| **Hooks (on-commit)** | Run drift detection | Trace format compatibility |
+| **Hooks (on-generate)** | Check action DB freshness | — |
+| **Hooks (on-trace)** | — | Auto-analyze + alert |
+
+---
+
+## Project Structure
+
+```
+agentic-iam-tool/
+├── problem-1-iam-scoping/
+│   ├── specs/requirements.md
+│   ├── design/architecture.md
+│   ├── src/
+│   │   ├── types.ts
+│   │   ├── collector/store.ts        # SQLite observation store
+│   │   ├── collector/collector.ts    # CloudTrail log collector
+│   │   ├── engine/policy-engine.ts   # Policy generation logic
+│   │   ├── engine/drift-detector.ts  # Drift detection
+│   │   └── cli/index.ts             # CLI commands
+│   ├── infra/cdk-stack.ts           # AWS CDK infrastructure
+│   ├── kiro/
+│   │   ├── steering/project-rules.md
+│   │   └── hooks/
+│   │       ├── on-save-validate-policy.md
+│   │       ├── on-commit-drift-check.md
+│   │       └── on-generate-update-check.md
+│   ├── package.json
+│   └── tsconfig.json
+├── problem-2-observability/
+│   ├── specs/requirements.md
+│   ├── design/architecture.md
+│   ├── src/
+│   │   ├── types.ts
+│   │   ├── tracer/collector.ts       # Trace collection + PII redaction
+│   │   ├── tracer/store.ts           # DynamoDB trace store
+│   │   ├── dashboard/analyzer.ts     # Reasoning analysis engine
+│   │   ├── dashboard/renderer.ts     # Terminal visualization
+│   │   ├── alerting/alert-engine.ts  # CloudWatch + SNS alerts
+│   │   └── cli/index.ts             # CLI commands
+│   ├── kiro/
+│   │   ├── steering/project-rules.md
+│   │   └── hooks/
+│   │       ├── on-trace-complete.md
+│   │       ├── on-save-pii-check.md
+│   │       └── on-commit-format-check.md
+│   └── package.json
+├── shared/
+│   └── self-update/index.ts          # Shared self-update module
+└── README.md                         # This file
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js 20+
+- AWS CLI configured with appropriate credentials
+- AWS account with CloudTrail enabled
+
+### Installation
+
+```bash
+# Problem 1
+cd problem-1-iam-scoping
+npm install
+npm run build
+
+# Problem 2
+cd problem-2-observability
+npm install
+npm run build
+```
+
+### Deploy Infrastructure (Problem 1)
+
+```bash
+cd problem-1-iam-scoping/infra
+npx cdk deploy --context agentRoleArn=arn:aws:iam::123456789012:role/MyAgentRole
+```
+
+---
+
+## Why These Problems?
+
+1. **Every AWS developer** struggles with IAM — it's consistently the #1 pain point
+2. **Every AI developer** struggles with debugging agent reasoning — it's the #1 blocker to production
+3. **Self-updating** ensures the tool doesn't become stale as AWS adds ~50 new IAM actions/month
+4. **Combined insight**: The tracer tells you *what* the agent did and *why*; the IAM tool tells you *what permissions it needs* — together they provide complete agent governance
+
+---
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+MIT

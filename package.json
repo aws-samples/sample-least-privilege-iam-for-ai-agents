@@ -1,0 +1,20 @@
+{
+  "name": "agentguard-demo",
+  "version": "1.0.0",
+  "description": "AgentGuard — Self-contained demo (no AWS required)",
+  "type": "module",
+  "scripts": {
+    "demo": "tsx demo/run-demo.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "better-sqlite3": "12.10.0",
+    "chalk": "5.6.2"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "7.6.13",
+    "@types/node": "25.9.1",
+    "tsx": "4.22.3",
+    "typescript": "6.0.3"
+  }
+}
