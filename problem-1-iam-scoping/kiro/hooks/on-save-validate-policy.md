@@ -9,7 +9,7 @@ When a policy JSON file is saved:
 1. Parse the JSON and validate it's a valid IAM policy structure
 2. Check for `"Action": "*"` — flag as critical security issue
 3. Check for `"Resource": "*"` — flag as warning (acceptable only for certain actions)
-4. Validate policy size < 10,240 characters (managed policy limit)
+4. Validate policy size < 6,144 non-whitespace characters (managed policy limit)
 5. Ensure all actions use `service:Action` format
 6. Report validation results inline
 
@@ -30,8 +30,8 @@ export function validatePolicyOnSave(content: string): ValidationResult {
     }
   }
 
-  if (JSON.stringify(policy).length > 10240) {
-    issues.push("ERROR: Policy exceeds 10,240 character limit");
+  if (JSON.stringify(policy).length > 6144) {
+    issues.push("ERROR: Policy exceeds 6,144 character managed policy limit");
   }
 
   return { valid: issues.length === 0, issues };

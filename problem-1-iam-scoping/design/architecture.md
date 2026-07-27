@@ -113,7 +113,7 @@ CREATE TABLE collection_runs (
    c. Apply resource-level permission check (some actions don't support resource-level)
 4. Generate policy statements (one per service for readability)
 5. Add condition keys where observed (e.g., source VPC, encryption context)
-6. Validate against IAM policy size limits (6,144 chars inline, 10,240 managed)
+6. Validate against IAM policy size limits (6,144 chars managed, 10,240 inline role)
 ```
 
 **Output Format**:

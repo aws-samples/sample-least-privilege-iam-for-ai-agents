@@ -98,8 +98,10 @@ export class PolicyEngine {
     const json = JSON.stringify(policy);
 
     // Check size limits
-    if (json.length > 10240) {
-      errors.push(`Policy size (${json.length}) exceeds managed policy limit (10,240 chars)`);
+    // AWS managed policy limit: 6,144 non-whitespace characters
+    // See: https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html
+    if (json.length > 6144) {
+      errors.push(`Policy size (${json.length}) exceeds managed policy limit (6,144 chars)`);
     }
 
     // Check statement count
