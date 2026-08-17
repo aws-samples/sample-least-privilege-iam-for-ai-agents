@@ -1,0 +1,17 @@
+AgentGuard — npm audit (all packages)
+Date: 2026-08-17T09:22:25Z
+npm version: 11.11.0
+Note: audits run with a generated package-lock (npm install --package-lock-only).
+========================================
+
+########## Package: . ##########
+found 0 vulnerabilities
+
+########## Package: problem-1-iam-scoping ##########
+found 0 vulnerabilities
+
+########## Package: problem-2-observability ##########
+found 0 vulnerabilities
+
+########## Package: problem-1-iam-scoping/infra ##########
+found 0 vulnerabilities

@@ -129,8 +129,12 @@ program
   .option("--source <source>", "Update source: botocore|docs", "botocore")
   .action(async (opts) => {
     console.log(chalk.blue(`Updating action database from: ${opts.source}`));
-    // Delegates to shared self-update module
-    const { SelfUpdater } = await import("../../shared/self-update/index.js");
+    // Delegates to the shared self-update module. This module is built as part
+    // of the repository-root tsconfig (which includes shared/**/*), not this
+    // package's isolated build, so the specifier is kept dynamic to avoid a
+    // cross-rootDir compile-time resolution error. It is resolved at runtime.
+    const selfUpdateModule = "../../shared/self-update/index.js";
+    const { SelfUpdater } = await import(selfUpdateModule);
     const updater = new SelfUpdater();
     const result = await updater.update(opts.source);
     console.log(chalk.green(`✓ Updated: ${result.newActions} new actions, ${result.deprecated} deprecated`));
