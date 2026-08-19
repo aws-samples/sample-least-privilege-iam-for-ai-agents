@@ -134,7 +134,7 @@ Existing solutions (IAM Access Analyzer, the existing CloudTrail analysis patter
                            ▼
 ┌──────────────────────────────────────────────────────────────────────────┐
 │  Amazon S3: Observation Store                                              │
-│  s3://agent-iam-observations/{role}/{date}/events.jsonl                   │
+│  s3://<your-observation-bucket>/{role}/{date}/events.jsonl                 │
 └──────────────────────────┬───────────────────────────────────────────────┘
                            │ Scheduled trigger (daily/weekly)
                            ▼
@@ -176,7 +176,7 @@ Existing solutions (IAM Access Analyzer, the existing CloudTrail analysis patter
 | Management CLI (TypeScript) | On-demand observation, generation, drift check |
 | [botocore service model definitions](https://github.com/boto/botocore/tree/develop/botocore/data) | Self-updating IAM action reference (fetched from GitHub) |
 
-Repository: `https://code.aws.dev/personal_projects/alias_t/tarrych/AgentGuard`
+Repository: `https://github.com/aws-samples/agentguard`
 
 ---
 
@@ -214,7 +214,9 @@ Deploy the CloudTrail-to-S3 observation pipeline that continuously captures AI a
 2. Wait at least 15 minutes for CloudTrail event delivery (average is ~5 minutes, but delivery is not guaranteed within a specific time).
 3. Check the S3 observation bucket for new event records:
    ```bash
-   aws s3 ls s3://agent-iam-observations/{role}/{date}/
+   BUCKET_NAME=$(aws cloudformation describe-stacks --stack-name AgenticIamStack \
+     --query "Stacks[0].Outputs[?OutputKey=='TrailBucketName'].OutputValue" --output text)
+   aws s3 ls s3://${BUCKET_NAME}/{role}/{date}/
    ```
 4. Confirm the Lambda function executed successfully (check CloudWatch Logs).
 

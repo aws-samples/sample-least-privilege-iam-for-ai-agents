@@ -30,7 +30,7 @@
 
 ## Why AgentGuard Is Unique
 
-### The Gap No One Has Filled
+### The Gap AgentGuard Addresses
 
 ```
 Existing tools answer:          AgentGuard answers:
@@ -81,8 +81,8 @@ Existing tools answer:          AgentGuard answers:
 
 ### Summary
 
-**Individual pieces exist. The combination doesn't.**
+**Individual pieces exist. AgentGuard combines them.**
 
-No tool today can tell you: *"Your agent needs `dynamodb:Query` permission on table `Orders` because at reasoning step 3, it decided to look up order status — but that reasoning was only 60% coherent, and this permission wasn't needed last week before you updated the model."*
+AgentGuard answers questions like: *"Your agent needs `dynamodb:Query` permission on table `Orders` because at reasoning step 3, it decided to look up order status — but that reasoning was only 60% coherent, and this permission wasn't needed last week before you updated the model."*
 
-AgentGuard is the first tool that provides **complete agent governance** — security (IAM) + quality (reasoning) + evolution (self-update) — in one unified, developer-native experience.
+AgentGuard combines IAM scoping, reasoning quality scoring, and drift detection in a single developer-native tool — providing **complete agent governance** (security + quality + evolution) from a unified interface.

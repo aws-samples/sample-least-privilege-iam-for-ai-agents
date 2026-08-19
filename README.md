@@ -13,6 +13,11 @@ This project tackles two of the hardest problems developers face when deploying 
 
 Both tools **self-update** by pulling the latest AWS IAM action definitions and trace format parsers, ensuring they stay current as AWS evolves.
 
+> **Important**: This is sample code for demonstration and educational purposes.
+> It is NOT intended for direct production deployment without additional security
+> hardening, testing, and customization. See [SECURITY.md](./SECURITY.md) for
+> production recommendations.
+
 ---
 
 ## Architecture
