@@ -239,6 +239,14 @@ npx cdk deploy --context agentRoleArn=arn:aws:iam::123456789012:role/MyAgentRole
 
 ---
 
+## Security
+
+See [SECURITY.md](./SECURITY.md) for security considerations and production hardening
+recommendations. If you discover a potential security issue, please report it to AWS
+Security via [aws-security@amazon.com](mailto:aws-security@amazon.com) or the
+[vulnerability reporting page](http://aws.amazon.com/security/vulnerability-reporting/).
+Do **not** create a public GitHub issue for security vulnerabilities.
+
 ## License
 
-MIT
+This library is licensed under the MIT-0 License. See the [LICENSE](./LICENSE) file.
